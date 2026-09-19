@@ -10,21 +10,21 @@ Below are three demonstrations showing how the assistant handles different types
 
 ### 1. General Question Across All Papers
 
-![Global Search Demo](demo_global_search.gif)
+![Global Search Demo](assets/demos/demo_global_search.gif)
 
 ### 2. Question About a Specific Paper
 
-![Specific Paper Demo](demo_specific_paper.gif)
+![Specific Paper Demo](assets/demos/demo_specific_paper.gif)
 
 ### 3. Unsupported or Out-of-Scope Question
 
-![Fallback Mechanism Demo](demo_fallback.gif)
+![Fallback Mechanism Demo](assets/demos/demo_fallback.gif)
 
 ## How the System Works
 
 The system follows a multi-stage retrieval and question-answering pipeline. The main idea is to avoid asking one model to perform the entire task. Instead, the architecture separates retrieval, reranking, answer extraction, and final response generation.
 
-![System Architecture](pipeline_overview.png)
+![System Architecture](assets/images/pipeline_overview.png)
 
 ### Stage 1: BM25 Retrieval
 
@@ -32,7 +32,7 @@ The first stage performs a fast global search over the available paper content u
 
 Instead of sending every paragraph from every paper to the later stages, the system uses BM25 to reduce the search space to a smaller set of potentially relevant paragraphs. BM25 is lightweight and effective as an initial lexical retrieval method before introducing heavier neural models. The current system retrieves up to 30 candidate paragraphs during this stage.
 
-![BM25 Concept](bm25.webp)
+![BM25 Concept](assets/images/bm25.webp)
 
 ### Stage 2: SciBERT Reranking
 
@@ -40,7 +40,7 @@ The paragraphs retrieved by BM25 are passed to a SciBERT-based cross-encoder.
 
 Because QASPER consists of questions and answers grounded in highly technical papers, SciBERT provides a domain-specific representation for evaluating the relationship between the question and each retrieved paragraph. The reranker assigns a relevance score to each candidate, and the highest-scoring paragraphs are passed to the extraction stage.
 
-![SciBERT Reranking](Overview-of-the-SciBERT-model.png)
+![SciBERT Reranking](assets/images/Overview-of-the-SciBERT-model.png)
 
 ### Stage 3: DeBERTa-v3 Extractive QA
 
@@ -48,7 +48,7 @@ The selected paragraphs are passed to a DeBERTa-v3-based extractive question-ans
 
 This stage is responsible for identifying the candidate answer span within the retrieved context rather than generating an answer from scratch. The model predicts the start and end positions of candidate answers, and the pipeline evaluates multiple retrieved paragraphs and answer spans before selecting the most confident candidate.
 
-![DeBERTa Extraction](DeBERTa-v3-overview.png)
+![DeBERTa Extraction](assets/images/DeBERTa-v3-overview.png)
 
 ### Stage 4: Qwen Grounding and Fallback
 
@@ -112,10 +112,10 @@ The published results use their respective evaluation setups, so these values sh
 | Work / System                | Main Approach                          |  Answer F1  | Evidence F1 |
 | :--------------------------- | :------------------------------------- | :---------: | :---------: |
 | **QASPER Official Baseline** | Longformer Encoder-Decoder (LED)       |    33.63    |    29.85    |
-| **DRC Framework**            | PDF Extraction + Retriever + UnifiedQA |    39.22    |      —      |
+| **DRC Framework** | PDF Extraction + Retriever + UnifiedQA |    39.22    |      —      |
 | **Document Structure Study** | Structure-enhanced LED                 |    39.08    |    44.41    |
-| **Visconde**                 | Neural Reranking + GPT-3               |    49.10    |    38.50    |
-| **This Project**             | BM25 + SciBERT + DeBERTa-v3 + Qwen     | **41.40%*** |      —      |
+| **Visconde** | Neural Reranking + GPT-3               |    49.10    |    38.50    |
+| **This Project** | BM25 + SciBERT + DeBERTa-v3 + Qwen     | **41.40%*** |      —      |
 
 The official QASPER baseline reports 33.63 Answer F1 and 29.85 Evidence F1 using LED-base.
 
@@ -137,4 +137,3 @@ QASPER-Scientific-QA/
 ├── archive/                     # Legacy experimental notebooks
 ├── QASPER_Training_Lab.ipynb    # Training, evaluation, and pipeline metrics
 └── QASPER_Production_App.ipynb  # Final inference application and UI
-```
